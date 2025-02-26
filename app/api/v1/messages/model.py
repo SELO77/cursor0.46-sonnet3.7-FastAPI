@@ -14,7 +14,7 @@ class Message(Base):
     input_messages = Column(JSON, nullable=False)
     generated_text = Column(Text, nullable=True)
     system_prompt_id = Column(Integer, ForeignKey("system_prompts.id"), nullable=True)
-    metadata = Column(JSON, nullable=True)
+    message_metadata = Column(JSON, nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
     # Relationship
