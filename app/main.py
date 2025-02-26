@@ -7,7 +7,7 @@ from app.db.base import create_tables
 from app.middleware.cors import setup_cors
 
 # 데이터베이스 테이블 생성
-create_tables()
+# create_tables()
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
