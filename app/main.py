@@ -1,30 +1,26 @@
 from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
-from sqlalchemy.orm import Session
 
-from app.api.routes import api_router
+from app.api.v1.route import api_router
 from app.core.config import settings
-from app.db.session import Base, engine
+from app.core.exceptions import add_exception_handlers
+from app.db.base import create_tables
+from app.middleware.cors import setup_cors
 
-# Create database tables
-Base.metadata.create_all(bind=engine)
+# 데이터베이스 테이블 생성
+create_tables()
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
     openapi_url=f"{settings.API_V1_STR}/openapi.json",
 )
 
-# Set up CORS middleware
-if settings.BACKEND_CORS_ORIGINS:
-    app.add_middleware(
-        CORSMiddleware,
-        allow_origins=[str(origin) for origin in settings.BACKEND_CORS_ORIGINS],
-        allow_credentials=True,
-        allow_methods=["*"],
-        allow_headers=["*"],
-    )
+# CORS 미들웨어 설정
+setup_cors(app)
 
-# Include API router
+# 예외 핸들러 추가
+add_exception_handlers(app)
+
+# API 라우터 포함
 app.include_router(api_router, prefix=settings.API_V1_STR)
 
 
@@ -38,11 +34,3 @@ def root():
         "message": "AI Text Microservice API is running",
         "version": "1.0.0",
     }
-
-
-@app.get("/health")
-def health_check():
-    """
-    Health check endpoint
-    """
-    return {"status": "healthy"}
